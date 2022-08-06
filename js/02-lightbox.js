@@ -22,9 +22,3 @@ new SimpleLightbox(".gallery a", {
   captionDelay: 250,
   captionsData: "alt",
 });
-// galleryRef.addEventListener("click", (event) => {
-//   event.preventDefault();
-//   if (event.target.nodeName !== "IMG") {
-//     return;
-//   }
-// });

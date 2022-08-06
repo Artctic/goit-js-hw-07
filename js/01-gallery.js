@@ -1,51 +1,55 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-const galleryContainer = document.querySelector(".gallery");
+console.log(galleryItems);
 
-const imageEl = createImageMarkup(galleryItems);
+const galleryEl = document.querySelector(".gallery");
 
-galleryContainer.insertAdjacentHTML("beforeend", imageEl);
-
-galleryContainer.addEventListener("click", onGaleryContainerClick);
-
-function createImageMarkup(images) {
-  return images
+function createSmallGallery(galleryItems) {
+  return galleryItems
     .map(({ preview, original, description }) => {
       return `
-    <div class="gallery__item">
-      <a class="gallery__link" href="${original}">
-        <img
-          class="gallery__image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </div>
-        `;
+        <div class="gallery__item">
+  <a class="gallery__link" href="large-image.jpg">
+    <img
+      class="gallery__image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</div>`;
     })
     .join("");
 }
 
-function onGaleryContainerClick(e) {
-  e.preventDefault();
+galleryEl.innerHTML = createSmallGallery(galleryItems);
 
-  if (e.target.nodeName !== "IMG") {
+galleryEl.addEventListener("click", onPhotoClick);
+
+const lightbox = basicLightbox.create(`<img>`, {
+  onShow: () => window.addEventListener("keydown", onEscape),
+  onClose: () => window.removeEventListener("keydown", onEscape),
+});
+
+function onPhotoClick(ev) {
+  ev.preventDefault();
+  if (ev.target.nodeName !== "IMG") {
     return;
   }
+  console.log(ev.target);
 
-  const imageRef = e.target.dataset.source;
-  const removeImageRef = basicLightbox.create(`<img src="${imageRef}"/>`);
+  lightbox
+    .element()
+    .querySelector("img")
+    .setAttribute("src", `${ev.target.dataset.source}`);
+  lightbox.show();
+}
 
-  removeImageRef.show();
-  document.addEventListener("keydown", escapeModalClose);
-
-  function escapeModalClose(e) {
-    if (e.code === "Escape") {
-      removeImageRef.close();
-      document.removeEventListener("keydown", escapeModalClose);
-      console.log(e.code);
-    }
+function onEscape(ev) {
+  if (ev.code !== "Escape") {
+    return;
   }
+  lightbox.close();
+  lightbox.element().querySelector("img").removeAttribute("src");
 }
